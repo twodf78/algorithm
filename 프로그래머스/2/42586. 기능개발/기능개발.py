@@ -7,7 +7,7 @@ def solution(progresses, speeds):
     while idx < len(progresses):
         current = 1
         left = 100 - progresses[idx] - speeds[idx] * acc;
-        acc = acc + (1 if left//speeds[idx] == 0 else ceil(left / speeds[idx]))
+        acc += 1 if left//speeds[idx] == 0 else ceil(left / speeds[idx])
         next = idx + 1
         while next < len(progresses):
             if acc * speeds[next] + progresses[next] >= 100:

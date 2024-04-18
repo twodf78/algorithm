@@ -9,12 +9,12 @@ def solution(park, routes):
     w = len(park[0])
     p = None
     
-    # startPoint 찾기
-    for i in range(h):
-        row = park[i]
-        for idx, road in enumerate(list(row)):
-            if road == "S":
-                p = [i, idx]
+    # 시작지점 찾기
+    for rowIdx in range(h):
+        row = park[rowIdx]
+        for columnIdx, area in enumerate(list(row)):
+            if area == "S":
+                p = [rowIdx, columnIdx]
                 break
         if p != None:
             break
@@ -30,7 +30,7 @@ def solution(park, routes):
                 return False
         return True
     
-    # 루트 한 발짝씩 나아가기
+    # 명령 하나씩 수행하기
     for route in routes:
         [op, num] = route.split(" ")
         num = int(num)
@@ -44,7 +44,9 @@ def solution(park, routes):
         elif op == "N":
             idx = 3
         
+        # 방어코딩 + 문제 조건의 만족할 시, 해당 명령을 수행
         if idx != -1 and isValid(num, dr[idx]):
-            p = [p[0] + dr[idx][0] * num, p[1] + dr[idx][1] * num]
+            p = [p[0] + dr[idx][0] * num, 
+                 p[1] + dr[idx][1] * num]
             
     return p

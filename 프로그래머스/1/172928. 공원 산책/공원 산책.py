@@ -8,13 +8,18 @@ def solution(park, routes):
     h = len(park)
     w = len(park[0])
     p = None
+    
+    # startPoint 찾기
     for i in range(h):
         row = park[i]
         for idx, road in enumerate(list(row)):
             if road == "S":
                 p = [i, idx]
                 break
+        if p != None:
+            break
 
+    # 무시조건 확인
     def isValid(num, direction):
         height = p[0] + direction[0] * num 
         width = p[1] + direction[1] * num 
@@ -24,20 +29,22 @@ def solution(park, routes):
             if park[p[0] + direction[0] * n][p[1] + direction[1] * n] == "X":
                 return False
         return True
+    
+    # 루트 한 발짝씩 나아가기
     for route in routes:
         [op, num] = route.split(" ")
         num = int(num)
+        idx = -1
         if op == "E":
-            if isValid(num, dr[0]):
-                p = [p[0], p[1] + num]
-        elif op == "W":
-            if isValid(num, dr[1]):
-                p = [p[0], p[1] - num]
+            idx = 0
+        elif op == "W":            
+            idx = 1
         elif op == "S":
-            if isValid(num, dr[2]):
-                p = [p[0] + num, p[1]]
+            idx = 2
         elif op == "N":
-            if isValid(num, dr[3]):
-                p = [p[0] - num, p[1]]
+            idx = 3
+        
+        if idx != -1 and isValid(num, dr[idx]):
+            p = [p[0] + dr[idx][0] * num, p[1] + dr[idx][1] * num]
             
     return p

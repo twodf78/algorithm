@@ -9,7 +9,7 @@ class Solution {
         Collections.sort(phoneBook, (a, b) -> a.length() - b.length());
         
         for(String phone: phoneBook){
-            for(int i = 1; i< phone.length(); i++){
+            for(int i = 1; i<= phone.length(); i++){
                 if(set.contains(phone.substring(0, i))){
                     return false;
                 }

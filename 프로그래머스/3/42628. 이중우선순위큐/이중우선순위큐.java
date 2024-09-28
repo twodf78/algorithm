@@ -1,49 +1,46 @@
 import java.util.*;
-import java.util.stream.*;
-import java.io.*;
+
 class Solution {
     public int[] solution(String[] operations) {
-        int[] answer = new int[2];
-        answer[0] = 0;
-        answer[1] = 0;
+        int[] answer = new int[2]; // 결과를 담을 배열
        
-        PriorityQueue<Integer> pqreverse = new PriorityQueue<>(Collections.reverseOrder());
         PriorityQueue<Integer> pq = new PriorityQueue<>();
+        PriorityQueue<Integer> pqreverse = new PriorityQueue<>(Collections.reverseOrder());
         
-        int add = 0;
-        int minus = 0;
+        int add = 0; // 추가된 숫자의 개수
+        int minus = 0; // 삭제된 숫자의 개수
         
-        
-        for(String operation: operations){
+        for (String operation : operations) {
             String cmd = operation.split(" ")[0];
             Integer num = Integer.parseInt(operation.split(" ")[1]);
-            if(cmd.equals("I")){
+            
+            if (cmd.equals("I")) {
                 pq.add(num);
                 pqreverse.add(num);
                 add++;
-            }else{
+            } else {
                 minus++;
-                if(add <= minus){
+                if (add <= minus) {
                     pq.clear();
                     pqreverse.clear();
-                    minus =0;
-                    add=0;
+                    add = 0; // 초기화
+                    minus = 0; // 초기화
                     continue;
                 }
-                if(num < 0){
+                if (num < 0) {
                     int min = pq.poll();
                     pqreverse.remove(min);
-                }else{
+                } else {
                     int max = pqreverse.poll();
                     pq.remove(max);
                 }
             }
         }
 
-        
-        if(add > minus){
-            answer[0] = pqreverse.poll();
-            answer[1] = pq.poll();
+        // 결과를 answer 배열에 할당
+        if (add > minus) {
+            answer[0] = pqreverse.poll(); // 최대값
+            answer[1] = pq.poll(); // 최소값
         }
         return answer;
     }

@@ -47,7 +47,13 @@ class Solution {
         dfs(used, queue, visited, wires);
         
         int size = 0;
+        System.out.print(used[0] - 1+"  ");
+        System.out.print(used[1] - 1+"  ");
+            System.out.println();
         for(int i = 0 ; i<visited.length; i++){
+            
+            System.out.println(size);
+            System.out.print(visited[i]+" ");
             if(visited[i]){
                 size++;
             }

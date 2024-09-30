@@ -1,157 +1,160 @@
 import java.util.*;
 
 class Solution {
-    List<List<Point>> t = new ArrayList<>();
-    List<List<Point>> g = new ArrayList<>();
-    int[] dx = {0, 0, 1, -1};
-    int[] dy = {1, -1, 0, 0};
+    int[][] move = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+    int N, M;
+    int answer = 0;
+    boolean[][] visit_table;
+    boolean[][] visit_board;
+    int[][] board;
     
     public int solution(int[][] game_board, int[][] table) {
-        int answer = 0;
-        //규칙에 맞게 최대한 많은 퍼즐 조각을 채워 넣을 경우, 총 몇 칸을 채울 수 있는지 return 
+        board = game_board;
+
+        N = board.length;
+        M = board[0].length;
         
-        int len = game_board.length;
+        visit_table = new boolean[N][M];
+        visit_board = new boolean[N][M];
         
-        //game_board 0, 1 바꿔주기
-        for(int i=0; i<len; i++){
-            for(int j=0; j<len; j++){
-                if(game_board[i][j]==1){
-                    game_board[i][j] = 0;
-                }
-                else game_board[i][j] = 1;
+        for (int i=0;i<N;i++) {
+            for (int j=0;j<M;j++) {
+                if (!visit_table[i][j] && table[i][j] == 1) bfs(table, i, j);
             }
         }
         
-        boolean[][] visited_t = new boolean[len][len];
-        boolean[][] visited_g = new boolean[len][len];
+        return answer;
+    }
+    
+    void bfs(int[][] table, int r, int c) {
+        ArrayList<int[]> list = new ArrayList<>();
         
-        for(int i=0; i<len; i++){
-            for(int j=0; j<len; j++){
-                //table에서 블록 추출
-                if(table[i][j]==1 && !visited_t[i][j])
-                    bfs(i, j, table, visited_t, t);
+        list.add(new int[] {r, c});
+        visit_table[r][c] = true;
+        
+        int maxR = r;
+        int minR = r;
+        int maxC = c;
+        int minC = c;
+        
+        int idx = 0;
+        while (idx < list.size()) {
+            int[] now = list.get(idx++);
+            
+            for (int i=0;i<4;i++) {
+                int nextR = now[0] + move[i][0];
+                int nextC = now[1] + move[i][1];
+            
+                if (!check(nextR, nextC) || visit_table[nextR][nextC] || table[nextR][nextC] == 0) continue;
+                
+                visit_table[nextR][nextC] = true;
+                list.add(new int[] {nextR, nextC});
                     
-                //game_board에서 빈공간 추출
-                if(game_board[i][j]==1 && !visited_g[i][j])
-                    bfs(i, j, game_board, visited_g, g);
+                maxR = Math.max(maxR, nextR);
+                minR = Math.min(minR, nextR);
+                maxC = Math.max(maxC, nextC);
+                minC = Math.min(minC, nextC);
             }
         }
         
-        //table의 블록과 board 빈 공간의 블록을 회전하면서 비교해주기
-        answer = compareBlock(t, g, answer);
-        
-        return answer;
-    }
-    
-    public int compareBlock(List<List<Point>> table, List<List<Point>> board, int answer){
-        int table_size = table.size();
-        int board_size = board.size();
-        
-        boolean[] visited = new boolean[board_size];
-        
-        for(int i=0; i<table_size; i++){
-            for(int j=0; j<board_size; j++){
-                //일치하면
-                if(visited[j] || table.get(i).size()!=board.get(j).size())
-                    continue;
-                if(isRotate(table.get(i), board.get(j))){
-                    visited[j] = true; //블록으로 채워짐 
-                    answer += board.get(j).size();
-                    break;   
-                }
-               
+        int[][] arr = makeArr(list, minR, minC, maxR, maxC);
+        for (int i=0;i<4;i++) {
+            if (puzzle(arr, arr.length, arr[0].length)) {
+                answer += list.size();
+                break;
             }
+            if (i != 3) arr = rotate(arr);
         }
         
-        return answer;
     }
     
-    public boolean isRotate(List<Point> table, List<Point> board){
-        //오름차순 정렬
-        Collections.sort(board);
+    int[][] makeArr(ArrayList<int[]> list, int minR, int minC, int maxR, int maxC) {
+        int n = maxR - minR + 1;
+        int m = maxC - minC + 1;
+        int[][] ret = new int[n][m];
         
-        //90도씩 회전시켜보기. 0, 90, 180, 270
-        for(int i=0; i<4; i++){
-            //오름차순 정렬. table은 회전할때마다 다시 정렬해줌.
-            Collections.sort(table);
-            
-            int curr_x = table.get(0).x;
-            int curr_y = table.get(0).y;
-            
-            //회전하면서 좌표가 바뀌기 때문에, 다시 (0,0) 기준으로 세팅
-            for(int j=0; j<table.size(); j++){
-                table.get(j).x -= curr_x;
-                table.get(j).y -= curr_y;
-            }
-            
-            boolean check = true;
-            //좌표 비교
-            for(int j=0; j<board.size(); j++){
-                if(board.get(j).x != table.get(j).x || board.get(j).y != table.get(j).y){
-                    check = false;
-                    break;
+        for (int[] loc : list) {
+            ret[loc[0] - minR][loc[1] - minC] = 1;
+        }
+        
+        return ret;
+    }
+    
+    boolean check(int r, int c) {
+        if (r < 0 || r >= N || c < 0 || c >= M) return false;
+        return true;
+    }
+        
+    boolean puzzle(int[][] arr, int n, int m) {
+        for (int i=0;i<N-n+1;i++) {
+            Loop: for (int j=0;j<M-m+1;j++) {
+                for (int k=0;k<n;k++) {
+                    for (int l=0;l<m;l++) {
+                        if (arr[k][l] == 1 && (board[i + k][j + l] == 1 || visit_board[i + k][j + l])) continue Loop;
+                    }
                 }
+                if (checkPuzzle(i, j, arr, n, m)) return true;
             }
-            
-            if(check){
-                return true;
-            }
-            else{
-               //90도 회전시키기. x, y -> y, -x
-                for(int j=0; j<table.size(); j++){
-                    int temp = table.get(j).x;
-                    table.get(j).x = table.get(j).y;
-                    table.get(j).y = -temp;
-                }
-            }         
         }
         
         return false;
     }
     
-    public void bfs(int x, int y, int[][] board, boolean[][] visited, List<List<Point>> list){
-        
-        visited[x][y] = true;
-        
-        Queue<Point> q = new LinkedList<>();
-        q.add(new Point(x, y));
-        
-        List<Point> sub_list = new ArrayList<>();
-        sub_list.add(new Point(0, 0)); //(0,0) 기준으로 넣어줌
-        
-        while(!q.isEmpty()){
-            Point p = q.poll();
-            
-            for(int i=0; i<4; i++){
-                int nx = p.x + dx[i];
-                int ny = p.y + dy[i];
-                
-                if(nx<0 || ny<0 || nx>=board.length || ny>=board.length) continue;
-                
-                if(!visited[nx][ny] && board[nx][ny]==1){
-                    visited[nx][ny] = true;
-                    q.add(new Point(nx, ny));
-                    sub_list.add(new Point(nx-x, ny-y)); //(0, 0) 기준으로 넣기 때문에
+    boolean checkPuzzle(int startR, int startC, int[][] arr, int n, int m) {
+        for (int i=0;i<n;i++) {
+            for (int j=0;j<m;j++) {
+                if (arr[i][j] == 1) {
+                    board[startR + i][startC + j] = 1;
+                    visit_board[startR + i][startC + j] = true;
                 }
             }
         }
         
-        list.add(sub_list);
-    }
-    
-    static class Point implements Comparable<Point>{
-        int x, y;
-        Point(int x, int y){
-            this.x = x;
-            this.y = y;
+        boolean flag = false;
+        Loop: for (int i=0;i<n;i++) {
+            for (int j=0;j<m;j++) {
+                if (arr[i][j] == 1) {
+                    for (int k=0;k<4;k++) {
+                        int r = startR + i + move[k][0];
+                        int c = startC + j + move[k][1];
+                        
+                        if (!check(r, c)) continue;
+                        if (board[r][c] == 0) {
+                            flag = true;
+                            break Loop;
+                        }
+                    }
+                }
+            }
         }
         
-        public int compareTo(Point o){
-            int res = Integer.compare(this.x, o.x);
-            if(res==0){
-                res = Integer.compare(this.y, o.y);
+        if (flag) {
+            for (int i=0;i<n;i++) {
+                for (int j=0;j<m;j++) {
+                    if (arr[i][j] == 1) {
+                        board[startR + i][startC + j] = 0;
+                        visit_board[startR + i][startC + j] = false;
+                    }
+                }
             }
-            return res;
+            return false;
         }
+        
+        return true;
+    }
+    
+    int[][] rotate(int[][] a) {
+        int n = a.length;
+        int m = a[0].length;
+        
+        int[][] ret = new int[m][n];
+        
+        for (int i=0;i<n;i++) {
+            for (int j=0;j<m;j++) {
+                ret[j][n - i - 1] = a[i][j]; 
+            }
+        }
+        
+        return ret;
     }
 }

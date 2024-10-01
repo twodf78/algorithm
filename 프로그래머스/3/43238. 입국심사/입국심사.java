@@ -17,10 +17,10 @@ class Solution {
         return min;
     }
     public boolean isAble(long mid, int n, int[] times) {
-        long count = 0;
+        int count = 0;
         for(int i = 0; i< times.length;i++){
             int t = times[i];
-            count += (long)Math.floor((long)mid / t);
+            count += (int)Math.floor((long)mid / t);
             if(count >= n){
                 return true;
             }

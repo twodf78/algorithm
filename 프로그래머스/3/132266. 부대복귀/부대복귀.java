@@ -14,24 +14,21 @@ class Solution {
         
         Queue<int[]> queue = new LinkedList<>();
         
-        for(int i = 0; i<sources.length;i++){
-            queue.add(new int[]{destination, 0});
-            while(!queue.isEmpty()){
-                int[] current = queue.poll();
-                int node = current[0];
-                int cost = current[1];
+        queue.add(new int[]{destination, 0});
+        while(!queue.isEmpty()){
+            int[] current = queue.poll();
+            int node = current[0];
+            int cost = current[1];
+            List<Integer> nextList = map.get(node);
 
-                List<Integer> nextList = map.get(node);
-                for(Integer next : nextList){
-                    if(dp[next] != Integer.MAX_VALUE){
-                        continue;
-                    }else{
-                        dp[next] = Math.min(dp[next], cost + 1);
-                    }
-                    queue.add(new int[]{next, cost + 1});
+            for(Integer next : nextList){
+                if(dp[next] != Integer.MAX_VALUE){
+                    continue;
+                }else{
+                    dp[next] = Math.min(dp[next], cost + 1);
                 }
+                queue.add(new int[]{next, cost + 1});
             }
-            
         }
 
 

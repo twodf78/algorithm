@@ -60,26 +60,16 @@ class Solution {
             
             
             List<Job> jobList = map.get(i);
-            
-            //이번에 들어오는 게 없을 때
-            if(jobList == null){
-                if(done && !pq.isEmpty()){
-                    pq.peek().realStart = i;
-                }
-                continue;
-            }
             //이번에 들어오는 게 있을때
-            else{
-                //새로 들어오게끔
+            if(jobList != null){
                 for(Job job: jobList){
                     pq.add(job);
                 }
-                
-                //현재 자리 차지하는게 없을 때
-                if(done && !pq.isEmpty()){
-                    pq.peek().realStart = i;
-                    continue;
-                }
+            }
+            
+            //현재 자리 차지하는게 없을 때, 바꿔주기
+            if(done && !pq.isEmpty()){
+                pq.peek().realStart = i;
             }
         }
         

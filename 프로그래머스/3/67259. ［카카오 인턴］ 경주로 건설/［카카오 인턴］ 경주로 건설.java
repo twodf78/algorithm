@@ -1,76 +1,61 @@
 import java.util.*;
-
-class Car {
-	int x; // x좌표
-	int y; // y좌표
-	int dir; // 현재 방향
-	int cost; // 현재까지의 비용
-
-	Car(int a, int b, int c, int d) {
-		x = a;
-		y = b;
-		dir = c;
-		cost = d;
-	}
-}
-
 class Solution {
-	int[][] visit;
-	int len;
+    int n;
+    int answer = Integer.MAX_VALUE;
+    int[] dx = {1, -1, 0, 0};
+    int[] dy = {0, 0, 1, -1};
+    public int solution(int[][] board) {
+        n = board.length; 
+        
+        Queue<int[]> queue = new LinkedList();
+        queue.add(new int[]{0,0,100, 0});
+        queue.add(new int[]{0,0,100, 2});
+        int[][] visit = new int[n][n];
+        visit[0][0] = 100;
+        bfs(queue, board, visit);
+        
+        return answer - 100;
+    }
+    public void bfs(Queue<int[]> queue, int[][] board, int[][] visit){
+        
+        Queue<int[]> newQueue = new LinkedList();
+        while(!queue.isEmpty()){
+            while(!queue.isEmpty()){
+                int[] current = queue.poll();
+                int pi = current[0];
+                int pj = current[1];  
+                int cost = current[2];
+                int prev = current[3];
+                
+                                  
+                if(pi == n-1 && pj== n-1){
+                    answer = Math.min(answer, cost);
+                }
+                
+                for(int d = 0; d< 4; d++){
+                    int i = pi + dx[d];
+                    int j = pj + dy[d];
+                    if(!isValid(i, j)||board[i][j] == 1){
+                        continue;
+                    }
+                    
+                    int newCost = prev < 0 || prev == d ? cost + 100 : cost + 600;
 
-	public int solution(int[][] board) {
-		len = board.length;
-		visit = new int[len][len];
+                    
+                    if(visit[i][j]==0 || visit[i][j] + 500 > newCost){
+                        newQueue.add(new int[]{i, j, newCost, d});
+                        visit[i][j]=newCost;
+                    }
+                }
+            }
+            if(!newQueue.isEmpty()){
+                queue = newQueue;
+            }
+        }
 
-		return search(board);
-	}
-
-	int[] dx = {-1, 1, 0, 0};
-	int[] dy = {0, 0, -1, 1};
-
-	public int search(int[][] board) {
-		Queue<Car> q = new ArrayDeque();
-		q.add(new Car(0, 0, 1, 100)); // 아래쪽을 바라보는 차량
-		q.add(new Car(0, 0, 3, 100)); // 오른쪽을 바라보는 차량
-		visit[0][0] = 100;
-
-		int answer = Integer.MAX_VALUE;
-		while (!q.isEmpty()) {
-			Car cur = q.poll();
-
-			if (cur.x == len - 1 && cur.y == len - 1) {
-				answer = Math.min(answer, cur.cost);
-				continue;
-			}
-            
-            // 4가지 방향으로 탐색
-			for (int d = 0; d < 4; ++d) {
-				int nextX = cur.x + dx[d];
-				int nextY = cur.y + dy[d];
-                // 범위 내부이면서, 벽이 아닌경우 도로를 건설할 수 있다.
-				if (isInRange(nextX, nextY) && board[nextX][nextY] == 0) {
-                	// 방향의 변화 여부에 따라 건설비용이 달라진다.
-					int weight = cur.dir == d ? 100 : 600;
-                    // 한번도 가지 않은 경우
-					if (visit[nextX][nextY] == 0) {
-						visit[nextX][nextY] = cur.cost + weight;
-						q.add(new Car(nextX, nextY, d, cur.cost + weight));
-					} else if (cur.cost + weight < visit[nextX][nextY] + 500) {
-                    	// 간 적이 있지만, 비용적으로 이득이 발생하는 부분
-						visit[nextX][nextY] = cur.cost + weight;
-						q.add(new Car(nextX, nextY, d, cur.cost + weight));
-					} else {
-						// nothing
-					}
-				}
-			}
-		}
-		return answer - 100;
-	}
-
-	public boolean isInRange(int x, int y) {
-		if (0 <= x && x < len && 0 <= y && y < len)
-			return true;
-		return false;
-	}
+    }
+    
+    public boolean isValid(int i, int j){
+        return i>= 0 && j>= 0 && i< n && j < n;
+    }
 }

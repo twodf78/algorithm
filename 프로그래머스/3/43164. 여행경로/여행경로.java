@@ -1,29 +1,42 @@
 import java.util.*;
 class Solution {
-    List<String> ans = new ArrayList<>();
+    HashMap<String, List<Integer>> map;
     boolean[] visit;
     int n;
+    List<String> answer = new ArrayList<>();
     public String[] solution(String[][] tickets) {
+        map = new HashMap<>();
         n = tickets.length;
         visit = new boolean[n];
-            
-        dfs("ICN","ICN", tickets, 0);        
-        Collections.sort(ans);
-        return ans.get(0).split(" ");
+        for(int i = 0; i< n; i++){
+            String[] ticket = tickets[i];
+            List<Integer>idxList = map.getOrDefault(ticket[0], new ArrayList<>());
+            if(idxList.isEmpty()){
+                map.put(ticket[0],idxList);
+            }
+            idxList.add(i);
+        }
+        
+        dfs("ICN", "ICN", tickets, 0);
+        Collections.sort(answer);
+        return answer.get(0).split(" ");
+        
     }
-    public void dfs(String current, String route, String[][] tickets, int count){
+    public void dfs(String current, String route, String[][] tickets, int count) {
         if(count == n){
-            ans.add(route);
+            answer.add(route);
+            return;
+        };
+        List<Integer> next = map.get(current);
+        if(next == null){
             return;
         }
-        for(int i = 0; i<n; i++){
-            String[] t = tickets[i];
-            if(!t[0].equals(current) || visit[i]){
-                continue;
-            }
-            visit[i] = true;
-            dfs(t[1], route + " " + t[1], tickets, count+1);
-            visit[i] = false;
+        for(Integer n: next){
+            if(visit[n]) continue;
+            visit[n] = true;
+            dfs(tickets[n][1], route + " " + tickets[n][1], tickets, count + 1);
+            visit[n] = false;
         }
+        
     }
 }

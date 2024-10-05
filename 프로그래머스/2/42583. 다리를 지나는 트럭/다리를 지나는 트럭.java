@@ -2,46 +2,27 @@ import java.util.*;
 
 class Solution {
     public int solution(int bridge_length, int weight, int[] truck_weights) {
-        int answer = 0;  // 경과 시간
-        int onBridgeWeight = 0;  // 현재 다리 위에 있는 트럭들의 총 무게
-        Queue<Integer> bridge = new LinkedList<>();  // 다리 위에 있는 트럭의 남은 이동 시간
-        Queue<Integer> waitingTrucks = new LinkedList<>();  // 대기 중인 트럭의 무게 큐
-
-        // 대기 중인 트럭들을 모두 큐에 넣기
-        for (int truck : truck_weights) {
-            waitingTrucks.add(truck);
-        }
-
-        // 초기 다리 상태 (비어있음)
-        for (int i = 0; i < bridge_length; i++) {
-            bridge.add(0);  // 초기에는 0으로 다리를 채움
-        }
-
-        // 다리 위에 트럭이 없을 때까지 반복
-        while (!waitingTrucks.isEmpty() || onBridgeWeight > 0) {
-            answer++;  // 시간 경과
-
-            // 다리 위의 트럭이 한 칸씩 이동하고 다리를 건넌 트럭 제거
-            onBridgeWeight -= bridge.poll();
-
-            // 대기 중인 트럭이 다리로 진입할 수 있는지 확인
-            if (!waitingTrucks.isEmpty()) {
-                int nextTruck = waitingTrucks.peek();
-                if (onBridgeWeight + nextTruck <= weight) {
-                    // 트럭을 다리에 올림
-                    bridge.add(nextTruck);
-                    onBridgeWeight += nextTruck;
-                    waitingTrucks.poll();  // 다리에 올라간 트럭은 대기 큐에서 제거
-                } else {
-                    // 트럭이 다리에 오를 수 없으면 빈칸 추가
-                    bridge.add(0);
-                }
-            } else {
-                // 대기 트럭이 없으면 빈칸 추가
-                bridge.add(0);
+        Queue<int[]> bridge = new LinkedList<>();
+        int time = 0; 
+        int onWeight = 0; 
+        int idx = 0; // 대기 트럭 인덱스
+        
+        while (idx < truck_weights.length || !bridge.isEmpty()) {
+            time++; 
+            
+            if (!bridge.isEmpty() && bridge.peek()[1] == time) {
+                onWeight -= bridge.poll()[0];
+            }
+            
+            // 대기 트럭 중 다음 트럭이 다리로 올라갈 수 있는지 확인
+            if (idx < truck_weights.length && onWeight + truck_weights[idx] <= weight && bridge.size() < bridge_length) {
+                // [1]에 그냥 언제 나갈 수 있는 지를 집어넣음.
+                bridge.add(new int[]{truck_weights[idx], time + bridge_length}); 
+                onWeight += truck_weights[idx]; // 다리 위에 올라간 트럭의 무게를 더함
+                idx++; // 다음 대기 트럭으로 이동
             }
         }
-
-        return answer;
+        
+        return time;
     }
 }

@@ -3,25 +3,27 @@ import java.util.stream.*;
 import java.io.*;
 class Solution {
     public int solution(int[][] triangle) {
-        Integer[] dp = new Integer[triangle[triangle.length - 1].length];
+        int n =triangle.length; 
+        int[] dp = new int[triangle[n-1].length];
         dp[0] = triangle[0][0];
         for(int i = 1; i< triangle.length; i++){
-            Integer[] tempDp = new Integer[triangle[i].length];
-            for(int idx = 0; idx< tempDp.length; idx++){
-                tempDp[idx] = dp[idx];
+            int[] row = triangle[i];
+            int[] temp = new int[row.length - 1];
+            for(int j = 0; j< row.length - 1; j++){
+                temp[j] = dp[j];
             }
-            
-            for(int j = 0; j<triangle[i].length; j++){
-                if(j - 1< 0){
-                    dp[j] = tempDp[j]  + triangle[i][j];
-                }
-                else if(j == triangle[i].length - 1){
-                    dp[j] = tempDp[j - 1]  + triangle[i][j];
+            for(int j = 0; j< row.length; j++){
+                if(j == 0){
+                    dp[j] = temp[j] + row[j];
+                }else if(j == row.length - 1){
+                    dp[j] = temp[j - 1] + row[j];
                 }else{
-                    dp[j] = Math.max(tempDp[j-1]  + triangle[i][j], tempDp[j]  + triangle[i][j]);
+                    dp[j] = Math.max(temp[j - 1] + row[j], temp[j] + row[j]);
                 }
             }
         }
-        return Collections.max(Arrays.asList(dp));
+        Integer[] dpInteger = Arrays.stream(dp).boxed().toArray(Integer[]::new);
+        List<Integer> dpList = new ArrayList<>(Arrays.asList(dpInteger));
+        return Collections.max(dpList);
     }
 }

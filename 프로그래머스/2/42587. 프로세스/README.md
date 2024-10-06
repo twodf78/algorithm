@@ -1,10 +1,10 @@
 # [level 2] 프로세스 - 42587 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/42587?language=java) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/42587) 
 
 ### 성능 요약
 
-메모리: 77.8 MB, 시간: 1.04 ms
+메모리: 76.5 MB, 시간: 1.80 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2024년 09월 28일 19:00:48
+2024년 10월 06일 14:16:37
 
 ### 문제 설명
 

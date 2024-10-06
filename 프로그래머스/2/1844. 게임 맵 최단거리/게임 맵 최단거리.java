@@ -1,72 +1,64 @@
 import java.util.*;
 class Solution {
-    int answer = -1;
-    int[][] di = new int[4][2];
-
-    int h = 0;
-    int w = 0;
+    int answer = Integer.MAX_VALUE;
+    static int[] dx = {1, -1,  0,  0};
+    static int[] dy = {0,  0,  1, -1};
+    
+    int n;
+    int m;
     public int solution(int[][] maps) {
-        h = maps.length;
-        w = maps[maps.length - 1].length;
-            
-        for(int i = 0; i<4 ;i++){
-            if(i%2 == 0){
-                di[i][0] = 0;
-                di[i][1] = i>1? 1 : -1;
-            }else{
-                di[i][0] = i>1? 1 : -1;
-                di[i][1] = 0;
+        n = maps.length;
+        m = maps[0].length;
+        Queue<int[]> queue = new LinkedList<>();
+        int[][] visit = new int[n][m];
+        
+        for(int i = 0; i< n; i++){
+            for(int j = 0; j<m; j++){
+                visit[i][j] = Integer.MAX_VALUE;
             }
-
-            
         }
+        queue.add(new int[]{0, 0});
+        visit[0][0] = 0;
         
-        boolean[][]visit = new boolean[h][w];
-        visit[0][0] = true;
-        Queue<int[]> queue =new LinkedList<>();
-        queue.add(new int[]{0,0});
-        bfs(0, queue, visit, maps);
-
-
-        return answer;
-    }
-    public void bfs(int count, Queue<int[]> queue, boolean[][]visit, int[][] maps) {
+        bfs(queue, maps, visit, 0);
+        
+        return answer == Integer.MAX_VALUE? -1 : answer;
+    }    
+    public void bfs(Queue<int[]> queue, int[][] maps, int[][] visit, int count) {
         while(!queue.isEmpty()){
-            Queue<int[]> newQueue =new LinkedList<>();
             count++;
-        
+            Queue<int[]> newQueue = new LinkedList<>();
             while(!queue.isEmpty()){
-                int[] val = queue.poll();
-                for(int d = 0; d< 4 ;d++){
-                    int i = val[0] + di[d][0];
-                    int j = val[1] + di[d][1];
+                int[]current = queue.poll();
+                int pi = current[0];
+                int pj = current[1];
+                
 
+                if(pi == n-1 && pj == m-1){
+                    answer = Math.min(answer, count);
+                    return;
+                }
 
-                    //도달했을때
-                    if(i == h -1 && j == w - 1){
-                        answer = count + 1;
-                        return;
-                    }
-                    //index 초과
-                    if(i < 0 || j < 0 || i> h-1 || j > w - 1){
-                        continue;
-                    }
+                for(int d = 0; d<4; d++){
+                    int i = pi + dx[d];
+                    int j = pj + dy[d];
 
-                    //이미 방문했거나, 방문하지 못할 때
-                    if(visit[i][j] || maps[i][j] == 0){
-                        continue;
-                    }
+                    if(!isValid(i, j)) continue;
+                    if(maps[i][j] == 0) continue;
+                    if(visit[i][j] <= count) continue;
 
-                    visit[i][j]= true;
-                    newQueue.add(new int[]{i,j});
+                    visit[i][j] = count;
+                    newQueue.add(new int[]{i, j});
                 }
             }
-            if(newQueue.isEmpty()){
-                break;
-            }else{
+            if(!newQueue.isEmpty()){
                 queue = newQueue;
+            }else{
+                return;
             }
         }
-        return;
+    }
+    public boolean isValid(int i , int j){
+        return i >= 0 && j >= 0 && i < n && j < m;
     }
 }

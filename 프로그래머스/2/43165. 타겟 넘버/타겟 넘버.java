@@ -1,20 +1,31 @@
 import java.util.*;
 class Solution {
-    int answer = 0;
-    int targetNum ;
+    int count = 0;
+    int t;
     public int solution(int[] numbers, int target) {
-        targetNum = target;
-        dfs(0, 0, numbers);
-        return answer;
+        t = target;
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(numbers[0]);
+        queue.add(-numbers[0]);
+        bfs(0, queue, numbers);
+        return count;
     }
-    public void dfs(int idx, int num, int[] numbers) {
-        if(idx == numbers.length){
-            if(targetNum == num ){
-                answer++;
+    public void bfs(int idx, Queue<Integer> queue, int[] numbers) {
+        while(!queue.isEmpty()){
+            idx++;
+            Queue<Integer> newQueue = new LinkedList<>();
+            while(!queue.isEmpty()){
+                Integer sum = queue.poll();
+                if(idx == numbers.length){
+                    if(sum == t) count++;
+                    continue; 
+                }
+                newQueue.add(sum + numbers[idx]);
+                newQueue.add(sum - numbers[idx]);
             }
-            return;
+            if(idx < numbers.length){
+                queue = newQueue;
+            }
         }
-        dfs(idx + 1, num + numbers[idx], numbers);
-        dfs(idx + 1, num - numbers[idx], numbers);
     }
 }

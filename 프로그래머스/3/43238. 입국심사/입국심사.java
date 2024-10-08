@@ -4,11 +4,11 @@ class Solution {
     public long solution(int n, int[] times) {
         Arrays.sort(times);
         long min = 1;
-        long max = (long)times[0] *n;
+        long max = (long)times[0] * n;
         
-        while(min <= max){
+        while (min<=max){
             long mid = (long)Math.floor((long)(min+max) / 2);
-            if(isAble(mid, n, times)){
+            if(isAble(mid, n,  times)){
                 max = mid - 1;
             }else{
                 min = mid + 1;
@@ -16,15 +16,12 @@ class Solution {
         }
         return min;
     }
-    public boolean isAble(long mid, int n, int[] times) {
-        int count = 0;
-        for(int i = 0; i< times.length;i++){
-            int t = times[i];
-            count += (int)Math.floor((long)mid / t);
-            if(count >= n){
-                return true;
-            }
+    public boolean isAble(long mid, int n,  int[] times) {
+        for(int i = 0; i<times.length; i++){
+            n -= (int)Math.floor(mid / times[i]);
+            if(n<=0) return true;
         }
         return false;
     }
+
 }

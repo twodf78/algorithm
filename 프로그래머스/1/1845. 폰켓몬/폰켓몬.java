@@ -3,14 +3,10 @@ import java.util.Arrays;
 
 class Solution {
     public int solution(int[] nums) {
-        int answer = nums.length / 2;
-        
-        HashSet<Integer> set = new HashSet();
-        
-        for(Integer num: nums){
-            set.add(num);
+        HashSet<Integer> set=new HashSet<>();
+        for(int i = 0; i<nums.length;i++){
+            set.add(nums[i]);
         }
-        
-        return answer < set.size() ? answer : set.size();
+        return Math.min(set.size(), nums.length / 2);
     }
 }

@@ -1,44 +1,35 @@
 import java.util.*;
-import java.io.*;
-class Genre{
-    public int total;
-    public List<int[]> musicList;
-    
-    public Genre(){
-        this.total = 0;
-        this.musicList = new ArrayList();
-    }
-}
 class Solution {
     public int[] solution(String[] genres, int[] plays) {
-        HashMap<String, Genre> map = new HashMap<>();
-        List<Integer> ans = new ArrayList<>();
+        HashMap<String, Integer> genreMap = new HashMap<>();
+        HashMap<String, List<int[]>> playMap = new HashMap<>();
         
-        for(int i = 0; i< plays.length ; i++){
+        for(int i = 0 ; i< plays.length; i++){
             String genre = genres[i];
             int play = plays[i];
             
-            Genre entity = map.getOrDefault(genre, new Genre());
-            if(entity.musicList.isEmpty()){
-                map.put(genre, entity);
+            Integer count = genreMap.getOrDefault(genre, 0);
+            genreMap.put(genre, count + play);
+                        
+            List<int[]> playList = playMap.getOrDefault(genre, new ArrayList<>());
+            if(playList.isEmpty()){
+                playMap.put(genre, playList);
             }
-            entity.musicList.add(new int[]{play, i});
-            entity.total+=play;
+            playList.add(new int[]{play, i});
         }
         
-        Set<String> keySet= map.keySet();
-        List<String> keyList = new ArrayList<>(keySet);
-        Collections.sort(keyList, (a, b)->map.get(b).total - map.get(a).total);
+        List<String> genreList = new ArrayList<>(genreMap.keySet());
         
-        for(String key: keyList){
-            List<int[]> musicList = map.get(key).musicList;
-            Collections.sort(musicList, (a, b)->b[0] - a[0]);
-            for(int i = 0; i< Math.min(2, musicList.size()); i++){
-                
-                ans.add(musicList.get(i)[1]);
+        Collections.sort(genreList, (a, b) -> genreMap.get(b) -genreMap.get(a));
+        
+        List<Integer> answer= new ArrayList<>();
+        for(String genre: genreList){
+            List<int[]> playList = playMap.get(genre);
+            Collections.sort(playList, (a, b) -> b[0] - a[0]);
+            for(int i = 0; i< Math.min(2, playList.size()); i++){
+                answer.add(playList.get(i)[1]);
             }
         }
-        return ans.stream().mapToInt(x->x).toArray();
-        
+        return answer.stream().mapToInt(x->x).toArray();
     }
 }

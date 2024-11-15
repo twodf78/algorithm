@@ -1,5 +1,4 @@
 import java.util.*;
-import java.io.*;
 class Solution {
     public int solution(int[] scoville, int K) {
         PriorityQueue<Integer> pq = new PriorityQueue<>();
@@ -7,14 +6,13 @@ class Solution {
             pq.add(scoville[i]);
         }
         int count = 0;
-        while(!pq.isEmpty() && pq.peek() < K){
-            Integer first = pq.poll();
-            if(pq.isEmpty()) return -1;
-            Integer second = pq.poll();
+        while(pq.size() > 0 && pq.peek() < K){
+            int first = pq.poll();
+            if(pq.size()<=0) return -1;
+            int second = pq.poll();
             pq.add(first + second * 2);
             count++;
         }
         return count;
-        
     }
 }

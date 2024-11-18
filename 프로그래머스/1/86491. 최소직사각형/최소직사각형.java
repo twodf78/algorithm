@@ -1,19 +1,14 @@
 import java.util.*;
 import java.util.stream.*;
-import java.io.*;
 class Solution {
     public int solution(int[][] sizes) {
-        int answer = 0;
-        int maxW = 0;
-        int maxH = 0;
-        for(int i =0; i< sizes.length; i++){
-            int w = Math.max(sizes[i][0], sizes[i][1]);
-            int h = Math.min(sizes[i][0], sizes[i][1]);
-            
-            maxW = maxW < w? w: maxW;
-            maxH = maxH < h? h: maxH;
+        int w = 0;
+        int h = 0;
+        for(int i = 0; i<sizes.length; i++){
+            int[] size = sizes[i];
+            w = Math.max(Math.max(size[0],size[1]), w);
+            h = Math.max(Math.min(size[0],size[1]), h);
         }
-        return maxW * maxH;
-        
+        return w*h;
     }
 }

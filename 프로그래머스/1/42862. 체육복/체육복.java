@@ -1,32 +1,36 @@
 import java.util.*;
 import java.util.stream.*;
-import java.io.*;
 class Solution {
     public int solution(int n, int[] lost, int[] reserve) {
-        int answer = 0;
-        int[] count = new int[n];
-        for(int i = 0; i<lost.length; i++){
-            count[lost[i] - 1]--;
-        } 
-        for(int i = 0; i<reserve.length; i++){
-            count[reserve[i] - 1]++;
-        } 
-        for(int i = 0; i< n;i++){
-            count[i]++;
+        int[] dp = new int[n + 1];
+        for(int i = 1; i<=n;i++){
+            dp[i] = 1;
         }
-        for(int i = 0; i< n;i++){
-            if(count[i] == 0){
-                if(i-1 >= 0 && count[i-1] >= 2){
-                    count[i] ++;
-                    count[i-1] --;
-                }else if(i+1 < n && count[i+1] >= 2){
-                    count[i] ++;
-                    count[i+1] --;
-                } else{
-                    continue;
+        for(int i =0; i<lost.length; i++){
+            dp[lost[i]]--;
+        }
+        for(int i =0; i<reserve.length; i++){
+            dp[reserve[i]]++;
+        }
+        
+        for(int i = 1; i<= n;i++){
+            if(dp[i] == 0){
+                if(i-1>=1 && dp[i-1]==2){
+                    dp[i] = 1;
+                    dp[i-1]--;
+                }
+                else if (i+1<=n && dp[i+1]==2){
+                    dp[i] = 1;
+                    dp[i+1]--;
                 }
             }
-            answer++;
+        }
+        
+        int answer = 0;
+        for(int i = 1; i<= n;i++){
+            if(dp[i] > 0){
+                answer++;
+            }
         }
         return answer;
     }
